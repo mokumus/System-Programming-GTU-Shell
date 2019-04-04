@@ -13,7 +13,7 @@ int isIncluded(char* str, char c);
 int handleBuiltInCommand(char** command);
 int handleSimpleCommand(char** command, char* uwd);
 int handlePipedCommand(char** command1, char** command2, char* uwd);
-int handleInputDirectCommand(char** command, char* uwd);
+int handleInputDirectCommand(char** command, char** filename, char* uwd);
 int handleOutputDirectCommand(char** command, char** filename, char* uwd);
 char* pathToCommand(char* cmd, char* uwd);
 char* getNthPreviousCmd(char* str);
@@ -72,7 +72,7 @@ int main(int argc, const char* argv[]) {
                 handleOutputDirectCommand(parsedArgs, parsedCompoundCmd, uwd);
                 break;
             case 4: //Input redirection
-                printf("handle <\n");
+                handleInputDirectCommand(parsedArgs, parsedCompoundCmd, uwd);
                 break;
             default:
                 printf("Something went wrong. Command no: %d\n", cmdType);
@@ -186,11 +186,35 @@ int handleOutputDirectCommand(char** command, char** filename, char* uwd){
     }
     else if (pid == 0) {
         if(command[1] != NULL){
-            if (execl(pathToCommand(command[0], uwd), command[1], filename[0], (char *)0) < 0) //(char *)0 is for terminating argument list with null
+            if (execl(pathToCommand(command[0], uwd), command[1], filename[0],"OUTPUT_DIRECT", (char *)0) < 0) //(char *)0 is for terminating argument list with null
                 printf("Utility failed.\nCommand: %s\n", command[0]);
         }
         else{
-            if (execl(pathToCommand(command[0], uwd), filename[0], (char *)0) < 0)
+            if (execl(pathToCommand(command[0], uwd), filename[0],"OUTPUT_DIRECT", (char *)0) < 0)
+                printf("Utility failed.\nCommand: %s\n", command[0]);
+        }
+        exit(1);
+    }
+    else {
+        wait(NULL);
+        return 0;
+    }
+}
+
+
+int handleInputDirectCommand(char** command, char** filename, char* uwd){
+    pid_t pid = fork();
+    if (pid == -1) {
+        printf("Fork failed for directed comand.\n");
+        return -1;
+    }
+    else if (pid == 0) {
+        if(command[1] != NULL){
+            if (execl(pathToCommand(command[0], uwd), command[1], filename[0], "INPUT_DIRECT",(char *)0) < 0) //(char *)0 is for terminating argument list with null
+                printf("Utility failed.\nCommand: %s\n", command[0]);
+        }
+        else{
+            if (execl(pathToCommand(command[0], uwd), filename[0], "INPUT_DIRECT",(char *)0) < 0)
                 printf("Utility failed.\nCommand: %s\n", command[0]);
         }
         exit(1);

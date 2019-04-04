@@ -12,26 +12,39 @@ int postOrderApply (char *path, int pathfun (char *path1));
 int main(int argc, char **argv) {
     int result = -1;
     
-    //Simple with -z flag
-    if(argc == 3){
-        zflag = 1;
-        result = postOrderApply(argv[2], sizepathfun);
-        sizepathfun(argv[2]);
-        return result;
+    for(int i = 0; i < argc; i++){
+        printf("argv%d: %s\n",i,argv[i]);
+        if(strcmp(argv[i], "-z") == 0)
+            zflag = 1;
     }
     
     //Simple run
-    if(argv[0] != NULL && strcmp(argv[0], "bunedu") == 0){
-        result = postOrderApply(argv[1], sizepathfun);
-        sizepathfun(argv[1]);
+    if(strcmp(argv[0], "bunedu") == 0){
+        result = postOrderApply(argv[1+zflag], sizepathfun);
+        sizepathfun(argv[1+zflag]);
+        return result;
+    }
+    
+    //Input redirect
+    else if(strcmp(argv[1],"INPUT_DIRECT") == 0){
+        FILE *fp;
+        char path[MAX_PATH];
+        fp = freopen(argv[0], "r", stdin);
+        scanf("%s",path);
+        printf("path: %s\n",path);
+        result = postOrderApply(path, sizepathfun);
+        sizepathfun(path);
+        fclose(fp);
         return result;
     }
     
     //Output redirect
-    else{
-        freopen(argv[1], "w", stdout);
+    else if(strcmp(argv[2],"OUTPUT_DIRECT") == 0){
+        FILE *fp;
+        fp = freopen(argv[1], "w", stdout);
         result = postOrderApply(argv[0], sizepathfun);
         sizepathfun(argv[0]);
+        fclose(fp);
         return result;
     }
     
@@ -70,7 +83,7 @@ int postOrderApply (char *path, int pathfun (char *path1)) {
     
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_DIR || entry->d_type == DT_REG) {
-            char filepath[1024];
+            char filepath[MAX_PATH];
             if (strncmp(entry->d_name, ".",1) == 0)
                 continue;
             

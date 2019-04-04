@@ -2,11 +2,11 @@ help
 cd ..
 pwd
 lsf
-cd ./somedirectory
-cat myfile.txt
-wc myfile.txt
-bunedu ../../example
-cat myfile.txt | wc
+cd GTUSHELL
+cat pwd.c
+wc pwd.c
+bunedu .
+cat pwd.c | wc
 pwd | bunedu -z
 lsf > lsfoutput.txt
 bunedu < filecontainingpath.txt

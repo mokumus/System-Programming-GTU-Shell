@@ -1,4 +1,44 @@
 #include "gtushell.h"
+int lsf(const char *path);
+
+int main(int argc, const char * argv[]) {
+    for(int i = 0; i < argc; i++)
+        printf("argv%d: %s\n",i,argv[i]);
+    
+    
+    //Simple run
+    if(strcmp(argv[0], "lsf") == 0){
+        char cwd[MAX_PATH];
+        getcwd(cwd, sizeof(cwd));
+        lsf(cwd);
+        return 0;
+    }
+    
+    //Input direct
+    else if(strcmp(argv[1],"INPUT_DIRECT") == 0){
+        FILE *fp;
+        fp = freopen(argv[0], "r", stdin);
+        char cwd[MAX_PATH];
+        getcwd(cwd, sizeof(cwd));
+        lsf(cwd);
+        fclose(fp);
+        return 0;
+    }
+    
+    //Output redirect
+    else if(strcmp(argv[1],"OUTPUT_DIRECT") == 0){
+        FILE *fp;
+        fp = freopen(argv[0], "w", stdout);
+        char cwd[MAX_PATH];
+        getcwd(cwd, sizeof(cwd));
+        lsf(cwd);
+        fclose(fp);
+        return 0;
+    }
+    
+    else
+        return -1;
+}
 
 int lsf(const char *path){
     DIR *d;
@@ -40,20 +80,4 @@ int lsf(const char *path){
     
     closedir(d);
     return 0;
-}
-
-int main(int argc, const char * argv[]) {   
-    //Simple run
-    if(argv[0] != NULL && strcmp(argv[0], "lsf") == 0){
-        char cwd[MAX_PATH];
-        getcwd(cwd, sizeof(cwd));
-        return lsf(cwd);
-    }
-    //Output redirect
-    else{
-        freopen(argv[0], "w", stdout);
-        char cwd[MAX_PATH];
-        getcwd(cwd, sizeof(cwd));
-        return lsf(cwd);
-    }
 }

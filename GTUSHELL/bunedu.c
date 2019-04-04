@@ -42,8 +42,8 @@ int main(int argc, char **argv) {
     else if(strcmp(argv[2],"OUTPUT_DIRECT") == 0){
         FILE *fp;
         fp = freopen(argv[1], "w", stdout);
-        result = postOrderApply(argv[0], sizepathfun);
-        sizepathfun(argv[0]);
+        result = postOrderApply(argv[0+zflag], sizepathfun);
+        sizepathfun(argv[0+zflag]);
         fclose(fp);
         return result;
     }

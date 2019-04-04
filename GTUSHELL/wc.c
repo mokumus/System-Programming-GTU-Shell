@@ -3,14 +3,33 @@ int wc(char* filename);
 
 
 int main(int argc , char *argv[]) {
+    //Simple run
+    if (strcmp(argv[0],"wc") == 0)
+        wc(argv[1]);
     
-    if (argc == 2 && strcmp(argv[0],"wc") == 0)
-        return wc(argv[1]);
     
-    else{
-        freopen(argv[1], "w", stdout);
-        return wc(argv[0]);
+    //Input redirect
+    else if(strcmp(argv[1],"INPUT_DIRECT") == 0){
+        printf("HERE\n");
+        FILE *fp;
+        char path[MAX_PATH];
+        fp = freopen(argv[0], "r", stdin);
+        scanf("%s",path);
+        wc(path);
+        fclose(fp);
     }
+    
+    //Output redirect
+    else if(strcmp(argv[2],"OUTPUT_DIRECT") == 0){
+        FILE *fp;
+        fp = freopen(argv[1], "w", stdout);
+        wc(argv[0]);
+        fclose(fp);
+    }
+    else
+        printf("wc: %s: No such file or directory\n",argv[1] != NULL ?  " " : argv[1]);
+        
+    return 0;
 }
 
 int wc(char* filename){

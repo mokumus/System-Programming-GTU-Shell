@@ -184,7 +184,15 @@ int handleOutputDirectCommand(char** command, char** filename, char* uwd){
         printf("Fork failed for directed comand.\n");
         return -1;
     }
+    /*
+     *  Important note:
+     *  There are 2 conditional execl calls below
+     *  First one will be only for bunedu since it can take a flag argument
+     *  Other one is for the commands without flags
+     *  Commands with flags should orginize arguments with itself.
+    */
     else if (pid == 0) {
+        printf("command[0]: %s\n", command[0]);
         if(command[1] != NULL){
             if (execl(pathToCommand(command[0], uwd), command[1], filename[0],"OUTPUT_DIRECT", (char *)0) < 0) //(char *)0 is for terminating argument list with null
                 printf("Utility failed.\nCommand: %s\n", command[0]);
@@ -208,6 +216,13 @@ int handleInputDirectCommand(char** command, char** filename, char* uwd){
         printf("Fork failed for directed comand.\n");
         return -1;
     }
+    /*
+     *  Important note:
+     *  There are 2 conditional execl calls below
+     *  First one will be only for bunedu since it can take a flag argument
+     *  Other one is for the commands without flags
+     *  Commands with flags should orginize arguments with itself.
+     */
     else if (pid == 0) {
         if(command[1] != NULL){
             if (execl(pathToCommand(command[0], uwd), command[1], filename[0], "INPUT_DIRECT",(char *)0) < 0) //(char *)0 is for terminating argument list with null

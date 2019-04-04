@@ -26,11 +26,11 @@ int lsf(const char *path){
             //Size in bytes
             printf("%10ld", fileStat.st_size);
             //File name
-            printf("%15s", dir->d_name);
+            printf("%18s", dir->d_name);
             if(dir->d_type == DT_REG)
                 printf("%5s\n", "R");
             else
-                printf("%10s\n", "S");
+                printf("%5s\n", "S");
         }
         //Prepare path for next file
         strcpy(filepath, path);
@@ -42,12 +42,7 @@ int lsf(const char *path){
     return 0;
 }
 
-int main(int argc, const char * argv[]) {
-    for(int i = 0; i < argc; i++){
-        printf("argv[%d]: %s\n",i, argv[i]);
-    }
-    
-    
+int main(int argc, const char * argv[]) {   
     //Simple run
     if(argv[0] != NULL && strcmp(argv[0], "lsf") == 0){
         char cwd[MAX_PATH];

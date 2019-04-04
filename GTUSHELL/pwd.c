@@ -4,9 +4,9 @@ int getpwd();
 
 int main(int argc, const char* argv[]) {
     
-    if(argc == 1)
+    if(strcmp(argv[0],"pwd") == 0)
         return getpwd();
-
+    
     //File redirect
     else{
         freopen(argv[0], "w", stdout);

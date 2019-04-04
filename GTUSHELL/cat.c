@@ -1,6 +1,4 @@
 #include "gtushell.h"
-//SOURCE USED : https://stackoverflow.com/questions/3866468/using-system-calls-to-implement-the-unix-cat-command
-
 
 static int cat(const char *filename)
 {
@@ -31,7 +29,15 @@ int main(int argc, char **argv)
 {
     int i;
     
-    if (argc == 2) {
+    if (argc == 2 && strcmp(argv[0],"cat") == 0) {
+        for (i = 1; i < argc; i++) {
+            if (cat(argv[i]) != 0)
+                return -1;
+        }
+    }
+    
+    else{
+        freopen(argv[0], "w", stdout);
         for (i = 1; i < argc; i++) {
             if (cat(argv[i]) != 0)
                 return -1;

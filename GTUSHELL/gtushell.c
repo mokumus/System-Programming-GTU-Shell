@@ -7,6 +7,7 @@ void printInfo();
 //Signal handling
 char *whatSignal(int sig);
 void handleSignal(int sig);
+int isIncluded(char* str, char c);
 
 //Command handling
 int handleBuiltInCommand(char** command);
@@ -15,6 +16,8 @@ int handlePipedCommand(char** command1, char** command2, char* uwd);
 int handleInputDirectCommand(char** command, char* uwd);
 int handleOutputDirectCommand(char** command, char** filename, char* uwd);
 char* pathToCommand(char* cmd, char* uwd);
+char* getNthPreviousCmd(char* str);
+int isHistoryCmd(char* str);
 
 //String process and parsing functions
 int parseCompound(char* str, char** compoundCmd);
@@ -22,16 +25,23 @@ int parseFileDirect(char* str, char** strdirected);
 void parseSpace(char* str, char** parsed);
 int processString(char* str, char** cmd1, char** cmd2);
 int takeInput(char* str);
-int isIncluded(char* str, char c);
+
+
+static int historySize = 0;
+static char history[MAX_CMD_LIST][MAX_CMD];
 
 int main(int argc, const char* argv[]) {
-    char uwd[1024];
+    
+    char uwd[MAX_PATH];
     getcwd(uwd, sizeof(uwd));
     
     char inputString[MAX_CMD];
-    char* parsedArgs[MAX_CMD_LIST];        //Left part of a compound command
-    char* parsedCompoundCmd[MAX_CMD_LIST]; //Right part of a compound command
-    int cmdType= 0;
+    
+    char* parsedArgs[MAX_CMD_LIST];
+    char* parsedCompoundCmd[MAX_CMD_LIST];
+    int cmdType = 0;
+    
+   
     
     signal(SIGINT, handleSignal);
     while (1) {
@@ -39,6 +49,13 @@ int main(int argc, const char* argv[]) {
        
         if (takeInput(inputString))
             continue;
+        
+        //Previous command !n
+        if(isHistoryCmd(inputString)){
+            printInfo();
+            printf("%s\n", getNthPreviousCmd(inputString));
+            strcpy(inputString, (getNthPreviousCmd(inputString)));
+        }
         
         cmdType = processString(inputString, parsedArgs, parsedCompoundCmd);
         
@@ -79,7 +96,7 @@ void help() {
     return;
 }
 char* pathToCommand(char* cmd, char* uwd){
-    static char uPath[512];
+    static char uPath[MAX_PATH];
     strcpy(uPath, uwd);
     strcat(uPath, "/");
     strcat(uPath, cmd);
@@ -261,6 +278,16 @@ void parseSpace(char* str, char** parsed) {
     }
 }
 
+char* getNthPreviousCmd(char* str) {
+    char exc;
+    int n;
+  
+    sscanf(str,"%c%d",&exc,&n);
+    if(exc != '!')
+        return NULL;
+    return history[historySize -  n];
+}
+
 //cmd1 is always command
 //cmd2 is command or file name depending on compound type
 int processString(char* str, char** cmd1, char** cmd2) {
@@ -300,9 +327,17 @@ char* readline(char *str) {
     return str;
 }
 
+int isHistoryCmd(char* str){
+    return strncmp(str,"!",1) == 0 ? 1 : 0;
+}
+
 // Function to take input
 int takeInput(char* str) {
     str = readline(str);
+    
+    if(!isHistoryCmd(str)) //Add to history if it isn't !n command
+        strcpy(history[historySize++],str);
+
     if (strlen(str) != 0)
         return 0;
     else

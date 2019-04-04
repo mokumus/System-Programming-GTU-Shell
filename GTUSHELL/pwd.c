@@ -3,7 +3,8 @@
 int getpwd(void);
 
 int main(int argc, const char* argv[]) {
-    
+    //printf("in pwd\n");
+
     if(strcmp(argv[0],"pwd") == 0)
         return getpwd();
     
@@ -25,6 +26,11 @@ int main(int argc, const char* argv[]) {
         return 0;
     }
     
+    //Give output to pipe
+    else if(findArg(argc,argv,"PIPE_OUT") != -1){
+        printf("pwd pipe out\n");
+    }
+    
     else
         return -1;
 }
@@ -35,3 +41,4 @@ int getpwd(){
     printf("%s\n", cwd);
     return 0;
 }
+

@@ -54,7 +54,11 @@ int main(int argc, const char* argv[]) {
         if(isHistoryCmd(inputString)){
             printInfo();
             printf("%s\n", getNthPreviousCmd(inputString));
-            strcpy(inputString, (getNthPreviousCmd(inputString)));
+            if(getNthPreviousCmd(inputString) != NULL)
+               strcpy(inputString, getNthPreviousCmd(inputString));
+            else
+                continue;
+            
         }
         
         cmdType = processString(inputString, parsedArgs, parsedCompoundCmd);
@@ -129,6 +133,8 @@ int handlePipedCommand(char** command1, char** command2, char* uwd){
     int pipeIO[2];
     pid_t p1, p2;
     
+    
+    
     if (pipe(pipeIO) < 0) {
         printf("Pipe failed in piped command %s | %s\n", command1[0], command2[0]);
         return -1;
@@ -145,7 +151,7 @@ int handlePipedCommand(char** command1, char** command2, char* uwd){
         dup2(pipeIO[1], STDOUT_FILENO); //redirect output to stdout
         close(pipeIO[1]);               // close output
         
-        if (execv(pathToCommand(command1[0], uwd), command1) < 0) {
+        if (execl(pathToCommand(command1[0], uwd), "PIPE_OUT",(char*) 0) < 0) {
             printf("Error executing command: %s\n", command1[0]);
             exit(-1);
         }
@@ -164,7 +170,8 @@ int handlePipedCommand(char** command1, char** command2, char* uwd){
             close(pipeIO[1]);               //close output
             dup2(pipeIO[0], STDIN_FILENO);  //redirect input to stdin
             close(pipeIO[0]);               //close input
-            if (execv(pathToCommand(command2[0], uwd), command2) < 0) {
+
+            if (execl(pathToCommand(command2[0], uwd), "PIPE_IN", (char*) 0) < 0) {
                 printf("Error executing command: %s\n", command2[0]);
                 exit(1);
             }
@@ -322,7 +329,7 @@ char* getNthPreviousCmd(char* str) {
     int n;
   
     sscanf(str,"%c%d",&exc,&n);
-    if(exc != '!')
+    if(exc != '!' || n > historySize)
         return NULL;
     return history[historySize -  n];
 }

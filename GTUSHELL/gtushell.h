@@ -34,4 +34,15 @@
 #define SIGTRAP 5   /* Trace trap. */
 #define SIGABRT 6   /* Abort. */
 
+int findArg(int argc,const char **argv, char* key){
+    int i;
+    for (i = 0; i < argc; i++) {
+        if(strcmp(argv[i], key) == 0)
+            return 0;
+    }
+    return -1;
+}
+
+
+
 #endif /* gtushell_h */

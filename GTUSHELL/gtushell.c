@@ -199,7 +199,7 @@ int handleOutputDirectCommand(char** command, char** filename, char* uwd){
      *  Commands with flags should orginize arguments with itself.
     */
     else if (pid == 0) {
-        printf("command[0]: %s\n", command[0]);
+        
         if(command[1] != NULL){
             if (execl(pathToCommand(command[0], uwd), command[1], filename[0],"OUTPUT_DIRECT", (char *)0) < 0) //(char *)0 is for terminating argument list with null
                 printf("Utility failed.\nCommand: %s\n", command[0]);
@@ -357,9 +357,7 @@ int processString(char* str, char** cmd1, char** cmd2) {
 
 // Function to print username
 void printInfo() {
-    char username[64];
-    getlogin_r(username, 64);
-    printf("%s$ ", username);
+    printf("gtushell$ ");
 }
 
 char* readline(char *str) {

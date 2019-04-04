@@ -43,6 +43,8 @@ int main(int argc, const char* argv[]) {
         cmdType = processString(inputString, parsedArgs, parsedCompoundCmd);
         
         switch (cmdType) {
+            case 0: //built in command
+                break;
             case 1: //Simple command
                 handleSimpleCommand(parsedArgs, uwd);
                 break;
@@ -167,11 +169,11 @@ int handleOutputDirectCommand(char** command, char** filename, char* uwd){
     }
     else if (pid == 0) {
         if(command[1] != NULL){
-            if (execl(pathToCommand(command[0], uwd), command[1], filename[0]) < 0)
+            if (execl(pathToCommand(command[0], uwd), command[1], filename[0], (char *)0) < 0) //(char *)0 is for terminating argument list with null
                 printf("Utility failed.\nCommand: %s\n", command[0]);
         }
         else{
-            if (execl(pathToCommand(command[0], uwd), filename[0]) < 0)
+            if (execl(pathToCommand(command[0], uwd), filename[0], (char *)0) < 0)
                 printf("Utility failed.\nCommand: %s\n", command[0]);
         }
         exit(1);

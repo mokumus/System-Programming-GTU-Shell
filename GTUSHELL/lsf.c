@@ -24,7 +24,7 @@ int lsf(const char *path){
             printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
             printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
             //Size in bytes
-            printf("%15lld", fileStat.st_size);
+            printf("%15ld", fileStat.st_size);
             //File name
             printf("%15s", dir->d_name);
             if(dir->d_type == DT_REG)
@@ -43,7 +43,17 @@ int lsf(const char *path){
 }
 
 int main(int argc, const char * argv[]) {
-    char cwd[MAX_PATH];
-    getcwd(cwd, sizeof(cwd));
-    return lsf(cwd);
+    //Simple run
+    if(strcmp(argv[0], "lsf")){
+        char cwd[MAX_PATH];
+        getcwd(cwd, sizeof(cwd));
+        return lsf(cwd);
+    }
+    //Output redirect
+    else{
+        freopen(argv[1], "w", stdout);
+        char cwd[MAX_PATH];
+        getcwd(cwd, sizeof(cwd));
+        return lsf(cwd);
+    }
 }

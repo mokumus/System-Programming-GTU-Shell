@@ -4,6 +4,7 @@ static unsigned int total = 0;
 static unsigned int special = 0;
 static unsigned int zflag = 0; //0 is off, 1 is on
 
+
 int sum(const char *fpath, const struct stat *sb, int typeflag);
 int sizepathfun (char *path);
 int postOrderApply (char *path, int pathfun (char *path1));
@@ -11,16 +12,26 @@ int postOrderApply (char *path, int pathfun (char *path1));
 int main(int argc, char **argv) {
     int result = -1;
     
-    if(argc == 2){
+    //Simple with -z flag
+    if(argc == 3){
+        zflag = 1;
+        result = postOrderApply(argv[2], sizepathfun);
+        sizepathfun(argv[2]);
+        return result;
+    }
+    
+    //Simple run
+    if(argv[0] != NULL && strcmp(argv[0], "bunedu") == 0){
         result = postOrderApply(argv[1], sizepathfun);
         sizepathfun(argv[1]);
         return result;
     }
     
-    else if(argc == 3){
-        zflag = 1;
-        result = postOrderApply(argv[2], sizepathfun);
-        sizepathfun(argv[2]);
+    //Output redirect
+    else{
+        freopen(argv[1], "w", stdout);
+        result = postOrderApply(argv[0], sizepathfun);
+        sizepathfun(argv[0]);
         return result;
     }
     
@@ -74,5 +85,5 @@ int postOrderApply (char *path, int pathfun (char *path1)) {
             printf("Special file beware%d\n",special++);
     }
     closedir(dir);
-    return -1;
+    return total;
 }

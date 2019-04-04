@@ -13,7 +13,7 @@ int handleBuiltInCommand(char** command);
 int handleSimpleCommand(char** command, char* uwd);
 int handlePipedCommand(char** command1, char** command2, char* uwd);
 int handleInputDirectCommand(char** command, char* uwd);
-int handleOutputDirectCommand(char** command, char* uwd);
+int handleOutputDirectCommand(char** command, char** filename, char* uwd);
 char* pathToCommand(char* cmd, char* uwd);
 
 //String process and parsing functions
@@ -29,8 +29,8 @@ int main(int argc, const char* argv[]) {
     getcwd(uwd, sizeof(uwd));
     
     char inputString[MAX_CMD];
-    char* parsedArgs[MAX_CMD_LIST];
-    char* parsedCompoundCmd[MAX_CMD_LIST];
+    char* parsedArgs[MAX_CMD_LIST];        //Left part of a compound command
+    char* parsedCompoundCmd[MAX_CMD_LIST]; //Right part of a compound command
     int cmdType= 0;
     
     signal(SIGINT, handleSignal);
@@ -50,7 +50,7 @@ int main(int argc, const char* argv[]) {
                 handlePipedCommand(parsedArgs, parsedCompoundCmd, uwd);
                 break;
             case 3: //Output redirection
-                printf("handle >\n");
+                handleOutputDirectCommand(parsedArgs, parsedCompoundCmd, uwd);
                 break;
             case 4: //Input redirection
                 printf("handle <\n");
@@ -122,9 +122,9 @@ int handlePipedCommand(char** command1, char** command2, char* uwd){
     
     //CHILD FOR FIRST COMMAND
     if (p1 == 0) {
-        close(pipeIO[0]); //close input
+        close(pipeIO[0]);               //close input
         dup2(pipeIO[1], STDOUT_FILENO); //redirect output to stdout
-        close(pipeIO[1]); // close output
+        close(pipeIO[1]);               // close output
         
         if (execv(pathToCommand(command1[0], uwd), command1) < 0) {
             printf("Error executing command: %s\n", command1[0]);
@@ -142,9 +142,9 @@ int handlePipedCommand(char** command1, char** command2, char* uwd){
         
         //CHILD FOR SECOND COMMAND
         if (p2 == 0) {
-            close(pipeIO[1]); //close output
-            dup2(pipeIO[0], STDIN_FILENO); //redirect input to stdin
-            close(pipeIO[0]); //close input
+            close(pipeIO[1]);               //close output
+            dup2(pipeIO[0], STDIN_FILENO);  //redirect input to stdin
+            close(pipeIO[0]);               //close input
             if (execv(pathToCommand(command2[0], uwd), command2) < 0) {
                 printf("Error executing command: %s\n", command2[0]);
                 exit(1);
@@ -159,7 +159,31 @@ int handlePipedCommand(char** command1, char** command2, char* uwd){
     return 0;
 }
 
-// Function to execute builtin commands
+int handleOutputDirectCommand(char** command, char** filename, char* uwd){
+    pid_t pid = fork();
+    if (pid == -1) {
+        printf("Fork failed for directed comand.\n");
+        return -1;
+    }
+    else if (pid == 0) {
+        if(command[1] != NULL){
+            if (execl(pathToCommand(command[0], uwd), command[1], filename[0]) < 0)
+                printf("Utility failed.\nCommand: %s\n", command[0]);
+        }
+        else{
+            if (execl(pathToCommand(command[0], uwd), filename[0]) < 0)
+                printf("Utility failed.\nCommand: %s\n", command[0]);
+        }
+        exit(1);
+    }
+    else {
+        wait(NULL);
+        return 0;
+    }
+}
+
+
+// Function to execute built-in commands
 int handleBuiltInCommand(char** command){
     int i, cmdNo = 0;
     char* buildInCommands[3];
@@ -212,7 +236,7 @@ int parseCompound(char* str, char** compoundCmd) {
     for(i = 0; i < 3; i++){
         if(isIncluded(str, *parseTypes[i])){
             for (k = 0; k < 2; k++) {
-                compoundCmd[k] = strsep(&str, parseTypes[k]);
+                compoundCmd[k] = strsep(&str, parseTypes[i]);
                 if (compoundCmd[k] == NULL)
                     break;
             }

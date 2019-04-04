@@ -38,7 +38,6 @@ int main(int argc, char **argv)
     return 0;
 }
 
-
 static int cat(const char *filename) {
     int fd;
     char buffer[4096];

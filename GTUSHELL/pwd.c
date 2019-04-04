@@ -1,6 +1,6 @@
 #include "gtushell.h"
 
-int getpwd();
+int getpwd(void);
 
 int main(int argc, const char* argv[]) {
     

@@ -1,12 +1,11 @@
 #include "gtushell.h"
-int wc(char* filename);
 
+int wc(char* filename);
 
 int main(int argc , char *argv[]) {
     //Simple run
     if (strcmp(argv[0],"wc") == 0)
         wc(argv[1]);
-    
     
     //Input redirect
     else if(strcmp(argv[1],"INPUT_DIRECT") == 0){

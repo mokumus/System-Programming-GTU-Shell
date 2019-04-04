@@ -1,8 +1,8 @@
 #include "gtushell.h"
 
 //Misc
-void help();
-void printInfo();
+void help(void);
+void printInfo(void);
 
 //Signal handling
 char *whatSignal(int sig);

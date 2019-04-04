@@ -2,10 +2,6 @@
 int lsf(const char *path);
 
 int main(int argc, const char * argv[]) {
-    for(int i = 0; i < argc; i++)
-        printf("argv%d: %s\n",i,argv[i]);
-    
-    
     //Simple run
     if(strcmp(argv[0], "lsf") == 0){
         char cwd[MAX_PATH];

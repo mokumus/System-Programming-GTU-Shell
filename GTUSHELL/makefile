@@ -20,6 +20,5 @@ wc: wc.o
 bunedu: bunedu.o
 	gcc bunedu.o -o bunedu -lm
 
-
 clean:
 	rm *.o gtushell pwd lsf cat wc bunedu

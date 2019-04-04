@@ -4,7 +4,6 @@ static unsigned int total = 0;
 static unsigned int special = 0;
 static unsigned int zflag = 0; //0 is off, 1 is on
 
-
 int sum(const char *fpath, const struct stat *sb, int typeflag);
 int sizepathfun (char *path);
 int postOrderApply (char *path, int pathfun (char *path1));
